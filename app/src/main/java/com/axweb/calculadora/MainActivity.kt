@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         val buttonClear = findViewById<Button>(R.id.button_clear)
         val buttonCalculate = findViewById<Button>(R.id.button_calculate)
         val textHeightValue = findViewById<TextView>(R.id.text_height_value)
+        val textResult = findViewById<TextView>(R.id.text_result)
 
         seekbarHeight.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 progress: Int,
                 fromUser: Boolean
             ) {
-               textHeightValue.text = "$progress cm"
+                textHeightValue.text = "$progress cm"
                 textHeightValue.visibility = View.VISIBLE
             }
 
@@ -47,13 +49,29 @@ class MainActivity : AppCompatActivity() {
         })
 
         buttonCalculate.setOnClickListener {
+            try {
+                val weight = editWeight.text.toString().toDouble()
+                val height = seekbarHeight.progress.toDouble() / 100
 
+
+                if (height  > 0){
+                    val imc = weight / (height * height)
+                    textResult.text = String.format("IMC: %.2f", imc)
+                    textResult.visibility = View.VISIBLE
+                }else{
+                    Toast.makeText(this, R.string.msg_valid_height, Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: NumberFormatException){
+                Toast.makeText(this,R.string.msg_valid_weight, Toast.LENGTH_SHORT).show()
+            }
         }
 
         buttonClear.setOnClickListener {
             editWeight.setText("")
             seekbarHeight.progress = 0
             textHeightValue.visibility = View.GONE
+            textResult.visibility = View.GONE
 
         }
     }
